@@ -1,9 +1,11 @@
 #include <ultra64.h>
 
 #define INCLUDED_FROM_CAMERA_C
-#define ANALOG_AMOUNT 262144 / 360
-// Analog by y0shin, vrmiguel (github.com/vrmiguel) and Mors
 
+#define ANALOG_AMOUNT 262144 / 360
+// Analog by y0shin, Pathétique (github.com/vrmiguel) and Mors
+
+#include <stdio.h>
 #include "sm64.h"
 #include "camera.h"
 #include "seq_ids.h"
@@ -910,20 +912,24 @@ void radial_camera_move(struct Camera *c) {
         yawOffset = minAreaYaw;
     }
 
-    if (gPlayer2Controller->stickX != 0) {
-            if (gPlayer2Controller->stickX > 0) {
-                gCameraMovementFlags &= ~(CAM_MOVE_ROTATE_RIGHT | CAM_MOVE_ENTERED_ROTATE_SURFACE);
-                sModeOffsetYaw += ANALOG_AMOUNT * ((gPlayer2Controller->stickX / 64.0f) * (gPlayer2Controller->stickX / 64.0f)) * -1.0f;
-            }
-            else {
-                gCameraMovementFlags &= ~(CAM_MOVE_ROTATE_LEFT | CAM_MOVE_ENTERED_ROTATE_SURFACE);
-                sModeOffsetYaw += ANALOG_AMOUNT * ((gPlayer2Controller->stickX / 64.0f) * (gPlayer2Controller->stickX / 64.0f)) * 1.0f;
-            }
-        }
-
     // Check if mario stepped on a surface that rotates the camera. For example, when mario enters the
     // gate in BoB, the camera turns right to face up the hill path
     if (!(gCameraMovementFlags & CAM_MOVE_ROTATE)) {
+        // ANALOG ADDITION
+        if (gPlayer2Controller->stickX != 0) 
+        {
+            printf("gPlayer2Controller->stickX: %f\n", gPlayer2Controller->stickX);
+            if (gPlayer2Controller->stickX > 0) 
+            {
+                gCameraMovementFlags &= ~(CAM_MOVE_ROTATE_RIGHT | CAM_MOVE_ENTERED_ROTATE_SURFACE);
+                sModeOffsetYaw += ANALOG_AMOUNT * ((gPlayer2Controller->stickX / 64.0f) * (gPlayer2Controller->stickX / 64.0f)) * -1.0f;
+            }
+            else 
+            {
+                gCameraMovementFlags &= ~(CAM_MOVE_ROTATE_LEFT | CAM_MOVE_ENTERED_ROTATE_SURFACE);
+                sModeOffsetYaw += ANALOG_AMOUNT * ((gPlayer2Controller->stickX / 64.0f) * (gPlayer2Controller->stickX / 64.0f)) * 1.0f;
+        }
+    }
         if (sMarioGeometry.currFloorType == SURFACE_CAMERA_MIDDLE
             && sMarioGeometry.prevFloorType != SURFACE_CAMERA_MIDDLE) {
             gCameraMovementFlags |= (CAM_MOVE_RETURN_TO_MIDDLE | CAM_MOVE_ENTERED_ROTATE_SURFACE);
@@ -1126,17 +1132,22 @@ void mode_8_directions_camera(struct Camera *c) {
 
     radial_camera_input(c, 0.f);
 
-    if (gPlayer2Controller->stickX != 0) {
-            if (gPlayer2Controller->stickX > 0) {
-                gCameraMovementFlags &= ~(CAM_MOVE_ROTATE_RIGHT | CAM_MOVE_ENTERED_ROTATE_SURFACE);
-                sModeOffsetYaw += ANALOG_AMOUNT * ((gPlayer2Controller->stickX / 64.0f) * (gPlayer2Controller->stickX / 64.0f)) * -1.0f;
-            }
-            else {
-                gCameraMovementFlags &= ~(CAM_MOVE_ROTATE_LEFT | CAM_MOVE_ENTERED_ROTATE_SURFACE);
-                sModeOffsetYaw += ANALOG_AMOUNT * ((gPlayer2Controller->stickX / 64.0f) * (gPlayer2Controller->stickX / 64.0f)) * 1.0f;
-            }
+        // ANALOG ADDITION
+    if (gPlayer2Controller->stickX != 0) 
+    {
+        printf("gPlayer2Controller->stickX: %f\n", gPlayer2Controller->stickX);
+        if (gPlayer2Controller->stickX > 0) 
+        {
+            gCameraMovementFlags &= ~(CAM_MOVE_ROTATE_RIGHT | CAM_MOVE_ENTERED_ROTATE_SURFACE);
+            s8DirModeYawOffset += ANALOG_AMOUNT * ((gPlayer2Controller->stickX / 64.0f) * (gPlayer2Controller->stickX / 64.0f)) * -1.0f;
         }
-
+        else 
+        {
+            gCameraMovementFlags &= ~(CAM_MOVE_ROTATE_LEFT | CAM_MOVE_ENTERED_ROTATE_SURFACE);
+            s8DirModeYawOffset += ANALOG_AMOUNT * ((gPlayer2Controller->stickX / 64.0f) * (gPlayer2Controller->stickX / 64.0f)) * 1.0f;
+        }
+    }
+    /*
     if (gPlayer1Controller->buttonPressed & R_CBUTTONS) {
         s8DirModeYawOffset += DEGREES(45);
         play_sound_cbutton_side();
@@ -1145,6 +1156,7 @@ void mode_8_directions_camera(struct Camera *c) {
         s8DirModeYawOffset -= DEGREES(45);
         play_sound_cbutton_side();
     }
+    */
 
     lakitu_zoom(400.f, 0x900);
     c->nextYaw = update_8_directions_camera(c, c->focus, pos);
@@ -4840,6 +4852,7 @@ s32 radial_camera_input(struct Camera *c, UNUSED f32 unused) {
                     if (sModeOffsetYaw == DEGREES(105)) {
                         play_sound_button_change_blocked();
                     } else {
+                        play_sound_cbutton_side();
                     }
                 } else {
                     if (sModeOffsetYaw == DEGREES(60)) {
@@ -4935,16 +4948,7 @@ void handle_c_button_movement(struct Camera *c) {
     // Zoom in
     if (gPlayer1Controller->buttonPressed & U_CBUTTONS) {
         if (c->mode != CAMERA_MODE_FIXED && (gCameraMovementFlags & CAM_MOVE_ZOOMED_OUT)) {
-            if (gPlayer2Controller->stickX != 0) {
-                if (gPlayer2Controller->stickX > 0) {
-                    gCameraMovementFlags &= ~(CAM_MOVE_ROTATE_RIGHT | CAM_MOVE_ENTERED_ROTATE_SURFACE);
-                    sModeOffsetYaw += ANALOG_AMOUNT * ((gPlayer2Controller->stickX / 64.0f) * (gPlayer2Controller->stickX / 64.0f)) * -1.0f;
-                }
-            else {
-                gCameraMovementFlags &= ~(CAM_MOVE_ROTATE_LEFT | CAM_MOVE_ENTERED_ROTATE_SURFACE);
-                sModeOffsetYaw += ANALOG_AMOUNT * ((gPlayer2Controller->stickX / 64.0f) * (gPlayer2Controller->stickX / 64.0f)) * 1.0f;
-            }
-        }
+
             gCameraMovementFlags &= ~CAM_MOVE_ZOOMED_OUT;
             play_sound_cbutton_up();
         } else {
@@ -4957,6 +4961,24 @@ void handle_c_button_movement(struct Camera *c) {
         }
     }
     if (c->mode != CAMERA_MODE_FIXED) {
+
+           // ANALOG ADDITION
+            if (gPlayer2Controller->stickX != 0) 
+            {
+                printf("gPlayer2Controller->stickX c-mode: %f\n", gPlayer2Controller->stickX);
+                if (gPlayer2Controller->stickX > 0) 
+                {
+                    gCameraMovementFlags &= ~(CAM_MOVE_ROTATE_RIGHT | CAM_MOVE_ENTERED_ROTATE_SURFACE);
+                    sCSideButtonYaw += ANALOG_AMOUNT * ((gPlayer2Controller->stickX / 64.0f) * (gPlayer2Controller->stickX / 64.0f)) * -1.0f;
+                }
+                else 
+                {
+                    gCameraMovementFlags &= ~(CAM_MOVE_ROTATE_LEFT | CAM_MOVE_ENTERED_ROTATE_SURFACE);
+                    sCSideButtonYaw += ANALOG_AMOUNT * ((gPlayer2Controller->stickX / 64.0f) * (gPlayer2Controller->stickX / 64.0f)) * 1.0f;
+                }
+            }
+
+
         // Zoom out
         if (gPlayer1Controller->buttonPressed & D_CBUTTONS) {
             if (gCameraMovementFlags & CAM_MOVE_ZOOMED_OUT) {
@@ -4979,10 +5001,10 @@ void handle_c_button_movement(struct Camera *c) {
                 gCameraMovementFlags &= ~CAM_MOVE_ROTATE_LEFT;
             } else {
                 gCameraMovementFlags |= CAM_MOVE_ROTATE_RIGHT;
-                if (sModeOffsetYaw == 0) {
+                if (sCSideButtonYaw == 0) {
                     play_sound_cbutton_side();
                 }
-                sModeOffsetYaw = -cSideYaw;
+                sCSideButtonYaw = -cSideYaw;
             }
         }
         if (gPlayer1Controller->buttonPressed & L_CBUTTONS) {
@@ -4990,10 +5012,10 @@ void handle_c_button_movement(struct Camera *c) {
                 gCameraMovementFlags &= ~CAM_MOVE_ROTATE_RIGHT;
             } else {
                 gCameraMovementFlags |= CAM_MOVE_ROTATE_LEFT;
-                if (sModeOffsetYaw == 0) {
+                if (sCSideButtonYaw == 0) {
                     play_sound_cbutton_side();
                 }
-                sModeOffsetYaw = cSideYaw;
+                sCSideButtonYaw = cSideYaw;
             }
         }
     }
