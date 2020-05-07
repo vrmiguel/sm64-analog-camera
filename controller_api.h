@@ -3,6 +3,9 @@
 
 #define DEADZONE 4960
 
+// Analog camera movement by Pathétique (github.com/vrmiguel), y0shin and Mors
+// Contribute or communicate bugs at github.com/vrmiguel/sm64-analog-camera
+
 #include <ultra64.h>
 
 struct ControllerAPI {
@@ -10,11 +13,11 @@ struct ControllerAPI {
     void (*read)(OSContPad *pad);
 };
 
-    // Needed for analog camera movement
+    // Declaring these variables here save them for later use. They were originally declared in controller_sdl.c.
 int16_t rightx;
 int16_t righty;
 
-int c_rightx;   // Converted
-int c_righty;   // Converted
+int c_rightx;   // Will be converted into [-128 ~ 128] range. 
+int c_righty;   
 
 #endif
