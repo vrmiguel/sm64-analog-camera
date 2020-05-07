@@ -7,6 +7,9 @@
 
 #include "controller_sdl.h"
 
+// Analog camera movement by Pathétique (github.com/vrmiguel), y0shin and Mors
+// Contribute or communicate bugs at github.com/vrmiguel/sm64-analog-camera
+
 static struct ControllerAPI *controller_implementations[] = {
     &controller_recorded_tas,
     &controller_sdl,
@@ -31,7 +34,7 @@ void osContGetReadData(OSContPad *pad) {
     pad->stick_y = 0;
     pad->errnum = 0;
 
-            // New code: saves the P1's right stick 
+            // sm64_analog_camera: saves the P1's right stick data in order to feed P2's left stick later on.
     uint32_t magnitude_sq = (uint32_t)(rightx * rightx) + (uint32_t)(righty * righty);
     if (magnitude_sq > (uint32_t)(DEADZONE * DEADZONE)) {
         c_rightx = rightx / 0x100;
