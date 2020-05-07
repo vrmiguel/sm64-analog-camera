@@ -3,7 +3,8 @@
 #define INCLUDED_FROM_CAMERA_C
 
 #define ANALOG_AMOUNT 262144 / 360
-// Analog by y0shin, Pathétique (github.com/vrmiguel) and Mors
+// Analog camera movement by Pathétique (github.com/vrmiguel), y0shin and Mors
+// Contribute or communicate bugs at github.com/vrmiguel/sm64-analog-camera
 
 #include <stdio.h>
 #include "sm64.h"
