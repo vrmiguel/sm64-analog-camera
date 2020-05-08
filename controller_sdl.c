@@ -12,6 +12,10 @@
 
 #include "controller_api.h"
 
+
+extern int16_t rightx;
+extern int16_t righty;
+
 static bool init_ok;
 static SDL_GameController *sdl_cntrl;
 
@@ -57,7 +61,7 @@ static void controller_sdl_read(OSContPad *pad) {
 
     int16_t leftx = SDL_GameControllerGetAxis(sdl_cntrl, SDL_CONTROLLER_AXIS_LEFTX);
     int16_t lefty = SDL_GameControllerGetAxis(sdl_cntrl, SDL_CONTROLLER_AXIS_LEFTY);
-    rightx = SDL_GameControllerGetAxis(sdl_cntrl, SDL_CONTROLLER_AXIS_RIGHTX);  // These are being defined in controller_api.h in order to keep their values for analog camera use.
+    rightx = SDL_GameControllerGetAxis(sdl_cntrl, SDL_CONTROLLER_AXIS_RIGHTX);  // These are being defined as extern in order to keep their values for analog camera use.
     righty = SDL_GameControllerGetAxis(sdl_cntrl, SDL_CONTROLLER_AXIS_RIGHTY);
 
     int16_t ltrig = SDL_GameControllerGetAxis(sdl_cntrl, SDL_CONTROLLER_AXIS_TRIGGERLEFT);
